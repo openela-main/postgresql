@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 15
-Version: %{majorversion}.3
+Version: %{majorversion}.6
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -75,7 +75,7 @@ Url: http://www.postgresql.org/
 # that this be kept up with the latest minor release of the previous series;
 # but update when bugs affecting pg_dump output are fixed.
 %global prevmajorversion 13
-%global prevversion %{prevmajorversion}.7
+%global prevversion %{prevmajorversion}.14
 %global prev_prefix %{_libdir}/pgsql/postgresql-%{prevmajorversion}
 %global precise_version %{?epoch:%epoch:}%version-%release
 
@@ -1226,6 +1226,14 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Feb 9 2024 Filip Janus <fjanus@redhat.com> 15.6-1
+- Update to 15.6 and 13.14
+- Fix CVE-2024-0985
+
+* Mon Nov 13 2023 Masahiro Matsuya <mmatsuya@redhat.com> - 15.5-1
+- update to 15.5
+- Fixes CVE-2023-5868, CVE-2023-5869, CVE-2023-5870, CVE-2023-39417, and CVE-2023-39418
+
 * Wed Jun 14 2023 Masahiro Matsuya <mmatsuya@redhat.com> - 15.3-1
 - update to 15.3
 - Fixes CVE-2023-2454 and CVE-2023-2455
