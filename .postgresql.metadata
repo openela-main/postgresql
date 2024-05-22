@@ -1,0 +1,5 @@
+d96d6019e9070e3b50407ed72d802df041b88aa6f5ccc138aff1e1ac222fe43f SOURCES/postgresql-setup-8.9.tar.gz
+8f53aa95d78eb8e82536ea46b68187793b42bba3b4f65aa342f540b23c9b10a6 SOURCES/postgresql-15.5.tar.bz2
+f438ec3e2e252c2a1be84c5232bf1265e1c615444f83cc38b0dc59507b9ae59d SOURCES/postgresql-15.5.tar.bz2.sha256
+ce3c4d85d19b0121fe0d3f8ef1fa601f71989e86f8a66f7dc3ad546dd5564fec SOURCES/postgresql-16.1.tar.bz2
+0fd785f66c781b9545d2b67d466a6877956056e94fc41c9aee7d6a9843aa77bf SOURCES/postgresql-16.1.tar.bz2.sha256
