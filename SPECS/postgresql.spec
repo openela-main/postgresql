@@ -63,7 +63,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 16
 Version: %{majorversion}.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -111,6 +111,7 @@ Patch12: postgresql-no-libecpg.patch
 
 BuildRequires: make
 BuildRequires: gcc
+BuildRequires: lz4-devel, libzstd-devel
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
 BuildRequires: perl(ExtUtils::Embed), perl-devel
 BuildRequires: perl(Opcode)
@@ -482,6 +483,8 @@ export CFLAGS
 
 common_configure_options='
 	--disable-rpath
+	--with-lz4
+	--with-zstd
 %if %beta
 	--enable-debug
 	--enable-cassert
@@ -610,6 +613,8 @@ upgrade_configure ()
 		--host=%{_host} \
 		--prefix=%prev_prefix \
 		--disable-rpath \
+		--with-lz4 \
+		--with-zstd \
 %if %beta
 		--enable-debug \
 		--enable-cassert \
@@ -696,10 +701,6 @@ install -d $RPM_BUILD_ROOT/etc/pam.d
 install -m 644 %{SOURCE10} $RPM_BUILD_ROOT/etc/pam.d/postgresql
 %endif
 
-# Create the directory for sockets.
-install -d -m 755 $RPM_BUILD_ROOT%{?_localstatedir}/run/postgresql
-
-# ... and make a tmpfiles script to recreate it at reboot.
 mkdir -p $RPM_BUILD_ROOT%{_tmpfilesdir}
 install -m 0644 %{SOURCE9} $RPM_BUILD_ROOT%{_tmpfilesdir}/postgresql.conf
 
@@ -1076,8 +1077,8 @@ make -C postgresql-setup-%{setup_version} check
 %{_datadir}/pgsql/sql_features.txt
 %{_datadir}/pgsql/system_constraints.sql
 %{_datadir}/pgsql/system_functions.sql
-%{_datadir}/pgsql/fix-CVE-2024-4317.sql
 %{_datadir}/pgsql/system_views.sql
+%{_datadir}/pgsql/fix-CVE-2024-4317.sql
 %{_datadir}/pgsql/timezonesets/
 %{_datadir}/pgsql/tsearch_data/
 %dir %{_datadir}/postgresql-setup
@@ -1116,7 +1117,7 @@ make -C postgresql-setup-%{setup_version} check
 %attr(644,postgres,postgres) %config(noreplace) %{?_localstatedir}/lib/pgsql/.bash_profile
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql/backups
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql/data
-%attr(755,postgres,postgres) %dir %{?_localstatedir}/run/postgresql
+%ghost %attr(755,postgres,postgres) %dir %{?_rundir}/postgresql
 %if %pam
 %config(noreplace) /etc/pam.d/postgresql
 %endif
@@ -1217,8 +1218,18 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Aug 16 2024 Ales Nezbeda <anezbeda@redhat.com> - 16.4-2
+- Fix build on 16.4
+
 * Tue Aug 6 2024 Filip Janus <fjanus@redhat.com> - 16.4-1
 - Update to 16.4
+
+* Tue Jul 30 2024 Filip Janus <fjanus@redhat.com> - 16.1-3
+- Remove /var/run/postgresql
+- Related: RHEL-51275
+
+* Mon Jul 15 2024 Filip Janus <fjanus@redhat.com> - 16.1-2
+- Enable lz4 and zstd support
 
 * Mon Jan 08 2024 Filip Janus <fjanus@redhat.com> - 16.1-1
 - Update to 16.1
