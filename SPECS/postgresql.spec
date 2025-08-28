@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 16
-Version: %{majorversion}.8
+Version: %{majorversion}.10
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -75,7 +75,7 @@ Url: http://www.postgresql.org/
 # that this be kept up with the latest minor release of the previous series;
 # but update when bugs affecting pg_dump output are fixed.
 %global prevmajorversion 15
-%global prevversion %{prevmajorversion}.12
+%global prevversion %{prevmajorversion}.14
 %global prev_prefix %{_libdir}/pgsql/postgresql-%{prevmajorversion}
 %global precise_version %{?epoch:%epoch:}%version-%release
 
@@ -1218,6 +1218,9 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Aug 15 2025 Filip Janus <fjanus@redhat.com> - 16.10-1
+- Update to 16.10
+
 * Tue Feb 18 2025 Filip Janus <fjanus@redhat.com> - 16.8-1
 - Update to 16.8
 - Fix CVE-2025-1094
