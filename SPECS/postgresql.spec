@@ -1218,7 +1218,7 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
-* Fri Aug 15 2025 Filip Janus <fjanus@redhat.com> - 16.10-1
+* Wed Sep 3 2025 Filip Janus <fjanus@redhat.com> - 16.10-1
 - Update to 16.10
 
 * Tue Feb 18 2025 Filip Janus <fjanus@redhat.com> - 16.8-1
