@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 16
-Version: %{majorversion}.10
+Version: %{majorversion}.11
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -1216,6 +1216,10 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Mon Dec 01 2025 Filip Janus <fjanus@redhat.com> - 16.11-1
+- Update to 16.11
+- Resolves: RHEL-128820 (CVE-2025-12818)
+
 * Mon Aug 18 2025 Filip Janus <fjanus@redhat.com> - 16.10-1
 - Update to 16.10
 
