@@ -62,8 +62,8 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 15
-Version: %{majorversion}.14
-Release: 1%{?dist}
+Version: %{majorversion}.15
+Release: 2%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -89,7 +89,6 @@ Source0: https://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}
 Source1: postgresql-%{version}-US.pdf
 Source3: https://ftp.postgresql.org/pub/source/v%{prevversion}/postgresql-%{prevversion}.tar.bz2
 Source4: Makefile.regress
-Source9: postgresql.tmpfiles.d
 Source10: postgresql.pam
 Source11: postgresql-bashprofile
 
@@ -451,6 +450,15 @@ find . -type f -name Makefile -exec sed -i -e "s/SO_MAJOR_VERSION=\s\?\([0-9]\+\
 # remove .gitignore files to ensure none get into the RPMs (bug #642210)
 find . -type f -name .gitignore | xargs rm
 
+cat > postgresql.sysusers.conf <<EOF
+u postgres 26 'PostgreSQL Server' /var/lib/pgsql /bin/bash
+EOF
+
+cat > postgresql.tmpfiles.conf <<EOF
+d /run/postgresql 0755 postgres postgres -
+d /var/lib/pgsql 0700 postgres postgres -
+EOF
+
 
 %build
 # Avoid LTO on armv7hl as it runs out of memory
@@ -708,7 +716,9 @@ install -m 644 %{SOURCE10} $RPM_BUILD_ROOT/etc/pam.d/postgresql
 %endif
 
 mkdir -p $RPM_BUILD_ROOT%{_tmpfilesdir}
-install -m 0644 %{SOURCE9} $RPM_BUILD_ROOT%{_tmpfilesdir}/postgresql.conf
+install -m 0644 postgresql.tmpfiles.conf $RPM_BUILD_ROOT%{_tmpfilesdir}/postgresql.conf
+
+install -m 0644 -D postgresql.sysusers.conf $RPM_BUILD_ROOT%{_sysusersdir}/postgresql.conf
 
 # PGDATA needs removal of group and world permissions due to pg_pwd hole.
 install -d -m 700 $RPM_BUILD_ROOT%{?_localstatedir}/lib/pgsql/data
@@ -1121,6 +1131,7 @@ make -C postgresql-setup-%{setup_version} check
 %{_mandir}/man1/postmaster.*
 %{_sbindir}/postgresql-new-systemd-unit
 %{_tmpfilesdir}/postgresql.conf
+%{_sysusersdir}/postgresql.conf
 %{_unitdir}/*postgresql*.service
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql
 %attr(644,postgres,postgres) %config(noreplace) %{?_localstatedir}/lib/pgsql/.bash_profile
@@ -1227,6 +1238,14 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Dec 05 2025 Filip Janus <fjanus@redhat.com> - 15.15-2
+- Add sysusers configuration and generate tmpfiles.d dynamically
+- Resolves: RHEL-133896
+
+* Mon Dec 01 2025 Filip Janus <fjanus@redhat.com> - 15.15-1
+- Update to 15.15
+- Resolves: RHEL-128813 (CVE-2025-12818)
+
 * Fri Aug 15 2025 Filip Janus <fjanus@redhat.com> - 15.14-1
 - Update to 15.14
 
