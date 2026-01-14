@@ -1,6 +1,5 @@
 SOURCES/postgresql-13.22.tar.bz2.sha256
-SOURCES/postgresql-15.14-US.pdf
-SOURCES/postgresql-15.14.tar.bz2
-SOURCES/postgresql-15.14.tar.bz2.sha256
+SOURCES/postgresql-15.15.tar.bz2
+SOURCES/postgresql-15.15.tar.bz2.sha256
 SOURCES/postgresql-setup-8.8.tar.gz
 SOURCES/postgresql-13.22.tar.bz2
