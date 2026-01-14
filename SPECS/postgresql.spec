@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 13
-Version: %{majorversion}.14
+Version: %{majorversion}.23
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -75,7 +75,7 @@ Url: http://www.postgresql.org/
 # that this be kept up with the latest minor release of the previous series;
 # but update when bugs affecting pg_dump output are fixed.
 %global prevmajorversion 12
-%global prevversion %{prevmajorversion}.18
+%global prevversion %{prevmajorversion}.22
 %global prev_prefix %{_libdir}/pgsql/postgresql-%{prevmajorversion}
 %global precise_version %{?epoch:%epoch:}%version-%release
 
@@ -90,7 +90,6 @@ Source1: postgresql-%{version}-US.pdf
 Source2: generate-pdf.sh
 Source3: https://ftp.postgresql.org/pub/source/v%{prevversion}/postgresql-%{prevversion}.tar.bz2
 Source4: Makefile.regress
-Source9: postgresql.tmpfiles.d
 Source10: postgresql.pam
 Source11: postgresql-bashprofile
 
@@ -417,16 +416,16 @@ goal of accelerating analytics queries.
 %endif
 )
 %setup -q -a 12 -n postgresql-%{version}
-%patch1 -p1
-%patch2 -p1
-%patch5 -p1
+%patch -P 1 -p1
+%patch -P 2 -p1
+%patch -P 5 -p1
 %if %external_libpq
-%patch8 -p1
+%patch -P 8 -p1
 %else
-%patch12 -p1
+%patch -P 12 -p1
 %endif
-%patch9 -p1
-%patch14 -p1
+%patch -P 9 -p1
+%patch -P 14 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -452,6 +451,15 @@ find . -type f -name Makefile -exec sed -i -e "s/SO_MAJOR_VERSION=\s\?\([0-9]\+\
 
 # remove .gitignore files to ensure none get into the RPMs (bug #642210)
 find . -type f -name .gitignore | xargs rm
+
+cat > postgresql.sysusers.conf <<EOF
+u postgres 26 'PostgreSQL Server' /var/lib/pgsql /bin/bash
+EOF
+
+cat > postgresql.tmpfiles.conf <<EOF
+d /run/postgresql 0755 postgres postgres -
+d /var/lib/pgsql 0700 postgres postgres -
+EOF
 
 
 %build
@@ -705,12 +713,10 @@ install -d $RPM_BUILD_ROOT/etc/pam.d
 install -m 644 %{SOURCE10} $RPM_BUILD_ROOT/etc/pam.d/postgresql
 %endif
 
-# Create the directory for sockets.
-install -d -m 755 $RPM_BUILD_ROOT%{?_localstatedir}/run/postgresql
-
-# ... and make a tmpfiles script to recreate it at reboot.
 mkdir -p $RPM_BUILD_ROOT%{_tmpfilesdir}
-install -m 0644 %{SOURCE9} $RPM_BUILD_ROOT%{_tmpfilesdir}/postgresql.conf
+install -m 0644 postgresql.tmpfiles.conf $RPM_BUILD_ROOT%{_tmpfilesdir}/postgresql.conf
+
+install -m 0644 -D postgresql.sysusers.conf $RPM_BUILD_ROOT%{_sysusersdir}/postgresql.conf
 
 # PGDATA needs removal of group and world permissions due to pg_pwd hole.
 install -d -m 700 $RPM_BUILD_ROOT%{?_localstatedir}/lib/pgsql/data
@@ -840,6 +846,9 @@ find_lang_bins plpython3.lst plpython
 find_lang_bins pltcl.lst pltcl
 %endif
 %endif
+
+install -m0644 -D postgresql.tmpfiles.conf %{buildroot}%{_tmpfilesdir}/postgresql.conf
+
 
 %pre server
 /usr/sbin/groupadd -g 26 -o -r postgres >/dev/null 2>&1 || :
@@ -1113,15 +1122,17 @@ make -C postgresql-setup-%{setup_version} check
 %{_mandir}/man1/postmaster.*
 %{_sbindir}/postgresql-new-systemd-unit
 %{_tmpfilesdir}/postgresql.conf
+%{_sysusersdir}/postgresql.conf
 %{_unitdir}/*postgresql*.service
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql
 %attr(644,postgres,postgres) %config(noreplace) %{?_localstatedir}/lib/pgsql/.bash_profile
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql/backups
 %attr(700,postgres,postgres) %dir %{?_localstatedir}/lib/pgsql/data
-%attr(755,postgres,postgres) %dir %{?_localstatedir}/run/postgresql
+%ghost %attr(755,postgres,postgres) %dir %{?_rundir}/postgresql
 %if %pam
 %config(noreplace) /etc/pam.d/postgresql
 %endif
+%{_tmpfilesdir}/postgresql.conf
 
 
 %files server-devel -f devel.lst
@@ -1219,6 +1230,30 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Dec 05 2025 Filip Janus <fjanus@redhat.com> - 13.23-1
+- Update to 13.23
+- Resolves: RHEL-128812 (CVE-2025-12818)
+
+* Fri Dec 05 2025 Filip Janus <fjanus@redhat.com> - 13.22-3
+- Add sysusers configuration and complete tmpfiles.d dynamically
+- Related: RHEL-94905
+
+* Wed Oct 22 2025 Filip Janus <fjanus@redhat.com> - 13.22-2
+- Define tmpfiles.d to enable ostree and bootc support
+
+* Fri Aug 15 2025 Filip Janus <fjanus@redhat.com> - 13.22-1
+- Update to 13.22
+
+* Thu Nov 21 2024 Filip Janus <fjanus@redhat.com> - 13.18-1
+- Update to 13.18
+
+* Tue Aug 06 2024 Filip Janus <fjanus@redhat.com> - 13.16-1
+- Update to 13.16
+
+* Tue Jul 30 2024 Filip Janus <fjanus@redhat.com> - 13.14-2
+- Remove /var/run/postgresql
+- Related: RHEL-25756
+
 * Fri Feb 9 2024 Filip Janus <fjanus@redhat.com> - 13.14-1
 - Update to 13.14
 - Fix CVE-2024-0985
@@ -1226,7 +1261,7 @@ make -C postgresql-setup-%{setup_version} check
 * Mon Nov 13 2023 Masahiro Matsuya <mmatsuya@redhat.com> - 13.13-1
 - Update to 13.13
 - Fixes CVE-2023-5868, CVE-2023-5869, CVE-2023-5870, and CVE-2023-39417
-- Resolves: RHEL-16098
+- Resolves: RHEL-5567
 
 * Fri May 19 2023 Jorge San Emeterio <jsanemet@redhat.com> - 13.11-1
 - Update to 13.11
