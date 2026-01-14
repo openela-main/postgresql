@@ -59,7 +59,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 13
-Version: %{majorversion}.22
+Version: %{majorversion}.23
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -1224,6 +1224,10 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Mon Dec 01 2025 Filip Janus <fjanus@redhat.com> - 13.23-1
+- Update to 13.23
+- Resolves: RHEL-128818 (CVE-2025-12818)
+
 * Fri Aug 15 2025 Filip Janus <fjanus@redhat.com> - 13.22-1
 - Update to 13.22
 
