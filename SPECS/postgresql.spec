@@ -62,8 +62,8 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 15
-Version: %{majorversion}.15
-Release: 2%{?dist}
+Version: %{majorversion}.17
+Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -1238,6 +1238,10 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Thu Feb 26 2026 Lukas Javorsky <ljavorsk@redhat.com> - 15.17-1
+- Update to 15.17
+- Fixes: CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
+
 * Fri Dec 05 2025 Filip Janus <fjanus@redhat.com> - 15.15-2
 - Add sysusers configuration and generate tmpfiles.d dynamically
 - Resolves: RHEL-133896
