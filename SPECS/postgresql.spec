@@ -60,7 +60,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 13
 Version: %{majorversion}.23
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -107,6 +107,7 @@ Patch5: postgresql-var-run-socket.patch
 Patch6: postgresql-man.patch
 Patch8: postgresql-external-libpq.patch
 Patch9: postgresql-server-pg_config.patch
+Patch10: CVE-2026-2004--CVE-2026-2005--CVE-2026-2006.patch
 
 BuildRequires: gcc
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
@@ -367,6 +368,7 @@ benchmarks.
 %patch6 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -1224,6 +1226,9 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Feb 25 2026 Filip Janus <fjanus@redhat.com> - 13.23-2
+- fix CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
+
 * Mon Dec 01 2025 Filip Janus <fjanus@redhat.com> - 13.23-1
 - Update to 13.23
 - Resolves: RHEL-128818 (CVE-2025-12818)
