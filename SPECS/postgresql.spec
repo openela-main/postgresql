@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 16
-Version: %{majorversion}.11
+Version: %{majorversion}.13
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -75,7 +75,7 @@ Url: http://www.postgresql.org/
 # that this be kept up with the latest minor release of the previous series;
 # but update when bugs affecting pg_dump output are fixed.
 %global prevmajorversion 15
-%global prevversion %{prevmajorversion}.14
+%global prevversion %{prevmajorversion}.17
 %global prev_prefix %{_libdir}/pgsql/postgresql-%{prevmajorversion}
 %global precise_version %{?epoch:%epoch:}%version-%release
 
@@ -1216,6 +1216,13 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Fri Feb 27 2026 Filip Janus <fjanus@redhat.com> - 16.13-1
+- Update to 16.13
+- Fix CVE-2026-2004: PostgreSQL intarray missing validation of type of input
+- Fix CVE-2026-2005: PostgreSQL pgcrypto heap buffer overflow
+- Fix CVE-2026-2006: PostgreSQL missing validation of multibyte character length
+- Resolves: RHEL-149371 RHEL-149404 RHEL-149338
+
 * Mon Dec 01 2025 Filip Janus <fjanus@redhat.com> - 16.11-1
 - Update to 16.11
 - Resolves: RHEL-128820 (CVE-2025-12818)
