@@ -60,7 +60,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 13
 Version: %{majorversion}.23
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -108,10 +108,17 @@ Patch6: postgresql-man.patch
 Patch8: postgresql-external-libpq.patch
 Patch9: postgresql-server-pg_config.patch
 Patch10: CVE-2026-2004--CVE-2026-2005--CVE-2026-2006.patch
+Patch15: postgresql-CVE-2026-6478.patch
+Patch16: postgresql-CVE-2026-6637.patch
+Patch17: postgresql-CVE-2026-6477.patch
+Patch18: postgresql-CVE-2026-6475.patch
+Patch19: postgresql-CVE-2026-6473.patch
 
 BuildRequires: gcc
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
 BuildRequires: perl(ExtUtils::Embed), perl-devel
+BuildRequires: perl(Opcode)
+BuildRequires: perl(FindBin)
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-generators
 %endif
@@ -119,6 +126,7 @@ BuildRequires: readline-devel zlib-devel
 BuildRequires: systemd systemd-devel util-linux
 BuildRequires: multilib-rpm-config
 BuildRequires: libpq-devel
+BuildRequires: docbook-style-xsl
 
 # postgresql-setup build requires
 BuildRequires: m4 elinks docbook-utils help2man
@@ -369,6 +377,11 @@ benchmarks.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -1226,6 +1239,11 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Jun  3 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 13.23-3
+- Backport fix for CVE-2026-6478 from PostgreSQL 14.23
+- Backport fixes for CVE-2026-6637, CVE-2026-6477, CVE-2026-6475, CVE-2026-6473
+- Resolves: RHEL-179806
+
 * Wed Feb 25 2026 Filip Janus <fjanus@redhat.com> - 13.23-2
 - fix CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
 
