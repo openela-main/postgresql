@@ -63,7 +63,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 13
 Version: %{majorversion}.23
-Release: 2%{?dist}
+Release: 5%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -112,12 +112,19 @@ Patch9: postgresql-server-pg_config.patch
 Patch12: postgresql-no-libecpg.patch
 Patch14: postgresql-pgcrypto-openssl3-tests.patch
 Patch15: CVE-2026-2004--CVE-2026-2005--CVE-2026-2006.patch
+Patch16: postgresql-CVE-2026-6478.patch
+Patch17: postgresql-CVE-2026-6637.patch
+Patch18: postgresql-CVE-2026-6477.patch
+Patch19: postgresql-CVE-2026-6475.patch
+Patch20: postgresql-CVE-2026-6473.patch
+Patch21: postgresql-CVE-2026-6479.patch
 
 BuildRequires: make
 BuildRequires: gcc
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
 BuildRequires: perl(ExtUtils::Embed), perl-devel
 BuildRequires: perl(Opcode)
+BuildRequires: perl(FindBin)
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-generators
 %endif
@@ -428,6 +435,12 @@ goal of accelerating analytics queries.
 %patch -P 9 -p1
 %patch -P 14 -p1
 %patch -P 15 -p1
+%patch -P 16 -p1
+%patch -P 17 -p1
+%patch -P 18 -p1
+%patch -P 19 -p1
+%patch -P 20 -p1
+%patch -P 21 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -1232,6 +1245,23 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Aug  6 2026 Filip Janus <fjanus@redhat.com> - 13.23-5
+- Apply patch for CVE-2026-6479 in prep section
+- Resolves: CVE-2026-6479
+
+* Sat Aug  2 2026 Filip Janus <fjanus@redhat.com> - 13.23-4
+- Backport fix for CVE-2026-6479 from PostgreSQL 14.23
+  (SSL/GSS init causes denial of service via uncontrolled recursion)
+- Resolves: CVE-2026-6479
+
+* Wed Jun  3 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 13.23-3
+- Backport fix for CVE-2026-6478 from PostgreSQL 14.23
+- Backport fixes for CVE-2026-6637, CVE-2026-6477, CVE-2026-6475, CVE-2026-6473
+- Resolves: RHEL-179799
+- Resolves: RHEL-181866
+- Resolves: RHEL-181950
+- Resolves: RHEL-181964
+
 * Wed Feb 25 2026 Filip Janus <fjanus@redhat.com> - 13.23-2
 - fix CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
 
