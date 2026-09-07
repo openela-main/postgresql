@@ -60,7 +60,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 12
 Version: %{majorversion}.22
-Release: 7%{?dist}
+Release: 9%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -117,6 +117,7 @@ Patch16: postgresql-CVE-2026-6637.patch
 Patch17: postgresql-CVE-2026-6477.patch
 Patch18: postgresql-CVE-2026-6475.patch
 Patch19: postgresql-CVE-2026-6473.patch
+Patch20: postgresql-CVE-2026-6479.patch
 
 BuildRequires: gcc
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
@@ -391,6 +392,7 @@ benchmarks.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -1246,6 +1248,15 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Aug  6 2026 Filip Janus <fjanus@redhat.com> - 12.22-9
+- Apply patch for CVE-2026-6479 in prep section
+- Resolves: CVE-2026-6479
+
+* Sat Aug  2 2026 Filip Janus <fjanus@redhat.com> - 12.22-8
+- Backport fix for CVE-2026-6479 from PostgreSQL 14.23
+  (SSL/GSS init causes denial of service via uncontrolled recursion)
+- Resolves: CVE-2026-6479
+
 * Thu Jun  4 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 12.22-7
 - Backport fix for CVE-2026-6478 from PostgreSQL 14.23
 - Backport fixes for CVE-2026-6637, CVE-2026-6477, CVE-2026-6475, CVE-2026-6473
