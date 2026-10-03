@@ -60,7 +60,7 @@ Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 12
 Version: %{majorversion}.22
-Release: 9%{?dist}
+Release: 12%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
 # recognizes it as an independent license, so we do as well.
@@ -118,6 +118,23 @@ Patch17: postgresql-CVE-2026-6477.patch
 Patch18: postgresql-CVE-2026-6475.patch
 Patch19: postgresql-CVE-2026-6473.patch
 Patch20: postgresql-CVE-2026-6479.patch
+Patch21: postgresql-CVE-2026-14662.patch
+Patch22: postgresql-CVE-2026-14664.patch
+Patch23: postgresql-CVE-2026-14668.patch
+Patch24: postgresql-CVE-2026-14669.patch
+Patch25: postgresql-CVE-2026-14670.patch
+Patch26: postgresql-CVE-2026-14671.patch
+Patch27: postgresql-CVE-2026-14677.patch
+Patch28: postgresql-CVE-2026-14679.patch
+Patch29: postgresql-CVE-2026-14680.patch
+Patch30: postgresql-CVE-2026-15742.patch
+Patch31: postgresql-CVE-2026-16239.patch
+Patch32: postgresql-CVE-2026-19385.patch
+Patch33: postgresql-CVE-2026-6464.patch
+Patch34: postgresql-CVE-2026-6471.patch
+Patch35: backport-of-the-patch-to-fix-CVE-2025-8714.patch
+Patch36: postgresql-CVE-2026-18408.patch
+
 
 BuildRequires: gcc
 BuildRequires: perl(ExtUtils::MakeMaker) glibc-devel bison flex gawk
@@ -393,6 +410,22 @@ benchmarks.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -1248,6 +1281,19 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Sep 17 2026 Filip Janus <fjanus@redhat.com> - 12.22-12
+- add postgresql-CVE-2026-18408.patch
+
+* Wed Sep 17 2026 Filip Janus <fjanus@redhat.com> - 12.22-11
+- apply backport-of-the-patch-to-fix-CVE-2025-8714.patch
+
+* Wed Sep 17 2026 Filip Janus <fjanus@redhat.com> - 12.22-10
+- Backport fixes for multiple CVEs
+- Resolves: CVE-2026-14662, CVE-2026-14664, CVE-2026-14668, CVE-2026-14669
+- Resolves: CVE-2026-14670, CVE-2026-14671, CVE-2026-14677, CVE-2026-14679
+- Resolves: CVE-2026-14680, CVE-2026-15742, CVE-2026-16239, CVE-2026-19385
+- Resolves: CVE-2026-6464, CVE-2026-6471
+
 * Wed Aug  6 2026 Filip Janus <fjanus@redhat.com> - 12.22-9
 - Apply patch for CVE-2026-6479 in prep section
 - Resolves: CVE-2026-6479
