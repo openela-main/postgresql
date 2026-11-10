@@ -107,6 +107,8 @@ Patch5: postgresql-var-run-socket.patch
 Patch8: postgresql-external-libpq.patch
 Patch9: postgresql-server-pg_config.patch
 Patch12: postgresql-no-libecpg.patch
+Patch13: postgresql-pqc-ssl-groups-v2.patch
+Patch14: postgresql-pqc-ssl-groups-tests.patch
 
 BuildRequires: make
 BuildRequires: gcc
@@ -422,6 +424,8 @@ goal of accelerating analytics queries.
 %patch12 -p1
 %endif
 %patch9 -p1
+%patch -P 13 -p1
+%patch -P 14 -p1
 
 
 %if ! %external_libpq
@@ -451,6 +455,7 @@ EOF
 cat > postgresql.tmpfiles.conf <<EOF
 d /run/postgresql 0755 postgres postgres -
 d /var/lib/pgsql 0700 postgres postgres -
+f /var/lib/pgsql/.bash_profile 0644 postgres postgres - "[ -f /etc/profile ] && source /etc/profile\nPGDATA=/var/lib/pgsql/data\nexport PGDATA"
 EOF
 
 
@@ -1234,11 +1239,21 @@ make -C postgresql-setup-%{setup_version} check
 
 * Wed May 28 2026 Filip Janus <fjanus@redhat.com> - 16.14-1
 - Update to 16.14
-- Fix CVE-2026-6478
 
-* Thu Feb 26 2026 Lukas Javorsky <ljavorsk@redhat.com> - 16.13-1
-- Update to 16.13
-- Fixes: CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
+* Mon Jul 20 2026 Filip Janus <fjanus@redhat.com> - 16.8-6
+- Add SSL test coverage for colon-separated ssl_ecdh_curve group list
+- Backport test from upstream commit 3d1ef3a15c3 (adapted for PG16)
+- Resolves: RHEL-119229
+
+* Mon Jul 20 2026 Filip Janus <fjanus@redhat.com> - 16.8-5
+- Enable PQC-compatible TLS group negotiation via ssl_ecdh_curve
+- Backport SSL_CTX_set1_groups_list() from PG18 (upstream commit 3d1ef3a15c3)
+- Backport SSLerrmessageExt() helper for improved error reporting
+- Update GUC description to document colon-separated group list support
+- Resolves: RHEL-119229
+
+* Tue Mar 17 2026 Nikola Davidova <ndavidov@redhat.com> - 16.8-4
+- Release bump for .bash-profile fix for imagemode
 
 * Mon Nov 10 2025 Filip Janus <fjanus@redhat.com> - 16.8-3
 - Add sysusers configuration for PostgreSQL 16
