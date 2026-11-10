@@ -62,7 +62,7 @@
 Summary: PostgreSQL client programs
 Name: postgresql
 %global majorversion 15
-Version: %{majorversion}.18
+Version: %{majorversion}.19
 Release: 1%{?dist}
 
 # The PostgreSQL license is very similar to other MIT licenses, but the OSI
@@ -109,6 +109,8 @@ Patch5: postgresql-var-run-socket.patch
 Patch8: postgresql-external-libpq.patch
 Patch9: postgresql-server-pg_config.patch
 Patch12: postgresql-no-libecpg.patch
+Patch13: postgresql-pqc-ssl-groups-v2.patch
+Patch14: postgresql-pqc-ssl-groups-tests.patch
 
 BuildRequires: make
 BuildRequires: gcc
@@ -424,6 +426,8 @@ goal of accelerating analytics queries.
 %patch -P 12 -p1
 %endif
 %patch -P 9 -p1
+%patch -P 13 -p1
+%patch -P 14 -p1
 
 # We used to run autoconf here, but there's no longer any real need to,
 # since Postgres ships with a reasonably modern configure script.
@@ -457,6 +461,7 @@ EOF
 cat > postgresql.tmpfiles.conf <<EOF
 d /run/postgresql 0755 postgres postgres -
 d /var/lib/pgsql 0700 postgres postgres -
+f /var/lib/pgsql/.bash_profile 0644 postgres postgres - "[ -f /etc/profile ] && source /etc/profile\nPGDATA=/var/lib/pgsql/data\nexport PGDATA"
 EOF
 
 
@@ -1238,13 +1243,26 @@ make -C postgresql-setup-%{setup_version} check
 
 
 %changelog
+* Wed Sep 02 2026 RHEL Packaging Agent <redhat-ymir-agent@redhat.com> - 15.19-1
+- Update to 15.19
+
 * Wed May 28 2026 Filip Janus <fjanus@redhat.com> - 15.18-1
 - Update to 15.18
-- Fix CVE-2026-6478
 
-* Thu Feb 26 2026 Lukas Javorsky <ljavorsk@redhat.com> - 15.17-1
-- Update to 15.17
-- Fixes: CVE-2026-2004 CVE-2026-2005 CVE-2026-2006
+* Mon Jul 20 2026 Filip Janus <fjanus@redhat.com> - 15.15-5
+- Add SSL test coverage for colon-separated ssl_ecdh_curve group list
+- Backport test from upstream commit 3d1ef3a15c3 (adapted for PG15)
+- Resolves: RHEL-119229
+
+* Mon Mar 30 2026 Filip Janus <fjanus@redhat.com> - 15.15-4
+- Enable PQC-compatible TLS group negotiation via ssl_ecdh_curve
+- Backport SSL_CTX_set1_groups_list() from PG18 (upstream commit 3d1ef3a15c3)
+- Backport SSLerrmessageExt() helper for improved error reporting
+- Update GUC description to document colon-separated group list support
+- Resolves: RHEL-119229
+
+* Wed Mar 18 2026 Nikola Davidova <ndavidov@redhat.com> - 15.15-3
+- Release bump for .bash-profile fix
 
 * Fri Dec 05 2025 Filip Janus <fjanus@redhat.com> - 15.15-2
 - Add sysusers configuration and generate tmpfiles.d dynamically
